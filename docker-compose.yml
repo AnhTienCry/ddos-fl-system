@@ -1,0 +1,171 @@
+# version removed (obsolete in newer docker-compose)
+
+services:
+  # --- FRONTEND ---
+  frontend:
+    build: ./frontend-dashboard
+    container_name: frontend-dashboard
+    ports:
+      - "3001:3000"
+    stdin_open: true
+    environment:
+      - WDS_SOCKET_PORT=0
+      - REACT_APP_BACKEND_URL=http://localhost:3000
+    depends_on:
+      - backend
+    networks:
+      - mang-ddos
+
+  # --- BACKEND API ---
+  backend:
+    build: ./backend-api
+    container_name: backend-api
+    ports:
+      - "3000:3000"
+    networks:
+      - mang-ddos
+
+  # ============================================
+  # FEDAVG STRATEGY (Port 8080)
+  # ============================================
+  server-fedavg:
+    build: ./ai-core
+    container_name: server-fedavg
+    command: python server_fedavg.py FedAvg
+    ports:
+      - "8080:8080"
+    depends_on:
+      - backend
+    networks:
+      - mang-ddos
+
+  client-fedavg-1:
+    build: ./ai-core
+    container_name: client-fedavg-1
+    command: python client.py 1
+    environment:
+      - SERVER_ADDRESS=server-fedavg:8080
+    depends_on:
+      - server-fedavg
+    networks:
+      - mang-ddos
+
+  client-fedavg-2:
+    build: ./ai-core
+    container_name: client-fedavg-2
+    command: python client.py 2
+    environment:
+      - SERVER_ADDRESS=server-fedavg:8080
+    depends_on:
+      - server-fedavg
+    networks:
+      - mang-ddos
+
+  client-fedavg-3:
+    build: ./ai-core
+    container_name: client-fedavg-3
+    command: python client.py 3
+    environment:
+      - SERVER_ADDRESS=server-fedavg:8080
+    depends_on:
+      - server-fedavg
+    networks:
+      - mang-ddos
+
+  # ============================================
+  # FEDPROX STRATEGY (Port 8081)
+  # ============================================
+  server-fedprox:
+    build: ./ai-core
+    container_name: server-fedprox
+    command: python server_fedprox.py FedProx
+    ports:
+      - "8081:8080"
+    depends_on:
+      - backend
+    networks:
+      - mang-ddos
+
+  client-fedprox-1:
+    build: ./ai-core
+    container_name: client-fedprox-1
+    command: python client.py 1
+    environment:
+      - SERVER_ADDRESS=server-fedprox:8080
+    depends_on:
+      - server-fedprox
+    networks:
+      - mang-ddos
+
+  client-fedprox-2:
+    build: ./ai-core
+    container_name: client-fedprox-2
+    command: python client.py 2
+    environment:
+      - SERVER_ADDRESS=server-fedprox:8080
+    depends_on:
+      - server-fedprox
+    networks:
+      - mang-ddos
+
+  client-fedprox-3:
+    build: ./ai-core
+    container_name: client-fedprox-3
+    command: python client.py 3
+    environment:
+      - SERVER_ADDRESS=server-fedprox:8080
+    depends_on:
+      - server-fedprox
+    networks:
+      - mang-ddos
+
+  # ============================================
+  # FEDOPT STRATEGY (Port 8082)
+  # ============================================
+  server-fedopt:
+    build: ./ai-core
+    container_name: server-fedopt
+    command: python server_fedopt.py FedOpt
+    ports:
+      - "8082:8080"
+    depends_on:
+      - backend
+    networks:
+      - mang-ddos
+
+  client-fedopt-1:
+    build: ./ai-core
+    container_name: client-fedopt-1
+    command: python client.py 1
+    environment:
+      - SERVER_ADDRESS=server-fedopt:8080
+    depends_on:
+      - server-fedopt
+    networks:
+      - mang-ddos
+
+  client-fedopt-2:
+    build: ./ai-core
+    container_name: client-fedopt-2
+    command: python client.py 2
+    environment:
+      - SERVER_ADDRESS=server-fedopt:8080
+    depends_on:
+      - server-fedopt
+    networks:
+      - mang-ddos
+
+  client-fedopt-3:
+    build: ./ai-core
+    container_name: client-fedopt-3
+    command: python client.py 3
+    environment:
+      - SERVER_ADDRESS=server-fedopt:8080
+    depends_on:
+      - server-fedopt
+    networks:
+      - mang-ddos
+
+networks:
+  mang-ddos:
+    driver: bridge
