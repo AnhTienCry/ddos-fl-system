@@ -177,8 +177,7 @@ function App() {
   const tabs = [
     { id: 'overview', label: 'Tổng quan', icon: <BarChart3 className="w-4 h-4" /> },
     { id: 'process', label: 'Quy trình FL', icon: <RefreshCw className="w-4 h-4" /> },
-    { id: 'logs', label: 'Training Logs', icon: <Terminal className="w-4 h-4" /> },
-    { id: 'qa', label: 'Giải thích', icon: <MessageCircle className="w-4 h-4" /> }
+    { id: 'logs', label: 'Training Logs', icon: <Terminal className="w-4 h-4" /> }
   ];
 
   return (
@@ -479,26 +478,7 @@ function App() {
             </motion.div>
           )}
 
-          {activeTab === 'qa' && (
-            <motion.div key="qa" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="qa-page">
-              <div className="qa-header"><h2>Câu Hỏi Thường Gặp</h2><p>Những câu hỏi có thể được hỏi khi bảo vệ đồ án</p></div>
-              <div className="qa-list">
-                {[
-                  { q: 'Federated Learning là gì? Khác gì với Machine Learning thông thường?', a: `<strong>Federated Learning (FL)</strong> là phương pháp học máy phân tán, cho phép train model trên dữ liệu nằm rải rác ở nhiều thiết bị/tổ chức khác nhau.<br/><br/><strong>Khác biệt chính:</strong><br/>• <strong>ML thường:</strong> Thu thập tất cả dữ liệu về 1 server trung tâm → Train model<br/>• <strong>Federated Learning:</strong> Dữ liệu ở đâu, train ở đó → Chỉ gửi model weights về server<br/><br/><strong>Ưu điểm FL:</strong><br/>• Bảo mật dữ liệu (data không rời khỏi client)<br/>• Tuân thủ quy định (GDPR, luật an ninh mạng)<br/>• Học từ dữ liệu đa dạng của nhiều nguồn` },
-                  { q: 'FedAvg, FedProx, FedOpt khác nhau như thế nào?', a: `<strong>1. FedAvg (Federated Averaging):</strong><br/>• Công thức: W_global = Σ (n_k/n) × W_k<br/>• Tính trung bình có trọng số của weights từ các clients<br/>• Đơn giản, nhanh, nhưng không tốt với dữ liệu non-IID<br/><br/><strong>2. FedProx:</strong><br/>• Thêm proximal term: min L(w) + (μ/2)||w - w_global||²<br/>• Giới hạn độ lệch của local model so với global model<br/>• Ổn định hơn khi dữ liệu giữa các clients khác nhau nhiều<br/><br/><strong>3. FedOpt:</strong><br/>• Sử dụng adaptive optimizer (Adam) ở server<br/>• Server không chỉ average mà còn optimize<br/>• Hội tụ nhanh hơn, accuracy thường cao nhất` },
-                  { q: 'Làm sao phát hiện DDoS từ dữ liệu NetFlow?', a: `<strong>NetFlow</strong> là protocol thu thập metadata về network traffic.<br/><br/><strong>15 Features sử dụng:</strong><br/>• Duration, Protocol (TCP/UDP/ICMP)<br/>• Source/Destination Bytes, Packets<br/>• TCP Flags (SYN, ACK, FIN...)<br/>• Port numbers, Flow rate<br/><br/><strong>DDoS Patterns mà model học:</strong><br/>• Duration ngắn bất thường<br/>• Số lượng packets rất lớn nhưng bytes nhỏ (SYN flood)<br/>• Nhiều SYN không có ACK<br/>• Traffic rate tăng đột biến<br/><br/><strong>Model:</strong> MLP Neural Network<br/>Input(15) → Dense(64, ReLU) → Dense(32, ReLU) → Output(1, Sigmoid)` },
-                  { q: 'Privacy-Preserving hoạt động như thế nào?', a: `<strong>Cách hoạt động:</strong><br/>1. Client nhận model weights từ server<br/>2. Client train trên dữ liệu LOCAL (data không đi đâu cả)<br/>3. Client chỉ gửi MODEL WEIGHTS về server<br/>4. Server aggregate weights để tạo model mới<br/><br/><strong>Tại sao an toàn:</strong><br/>• Dữ liệu gốc KHÔNG BAO GIỜ rời khỏi client<br/>• Model weights là các con số trừu tượng<br/>• Không thể reverse-engineer data từ weights` },
-                  { q: 'Tại sao chọn Neural Network?', a: `<strong>Lý do chọn MLP Neural Network:</strong><br/><br/>1. <strong>Dễ Aggregate:</strong> Weights của NN là tensors có thể averaging<br/>2. <strong>Non-linear Patterns:</strong> DDoS có patterns phức tạp, NN học được<br/>3. <strong>Lightweight:</strong> Model chỉ ~5000 parameters, truyền nhanh<br/>4. <strong>Phù hợp Tabular Data:</strong> NetFlow features là dạng bảng<br/><br/><strong>Architecture:</strong> 15 → 64 → 32 → 1 (Binary Classification)` },
-                  { q: 'Kết quả đạt được?', a: `<strong>Kết quả Training (5 Rounds):</strong><br/>• FedAvg: ~${(fedAvgMetrics.latestAccuracy * 100).toFixed(1)}% accuracy<br/>• FedProx: ~${(fedProxMetrics.latestAccuracy * 100).toFixed(1)}% accuracy<br/>• FedOpt: ~${(fedOptMetrics.latestAccuracy * 100).toFixed(1)}% accuracy<br/><br/><strong>Nhận xét:</strong><br/>• FedOpt thường tốt nhất do adaptive optimizer<br/>• Accuracy tăng dần qua các rounds<br/>• Model phát hiện DDoS patterns hiệu quả` }
-                ].map((item, idx) => (
-                  <motion.div key={idx} className="qa-item" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }}>
-                    <div className="qa-question"><div className="q-badge">Q</div><h4>{item.q}</h4></div>
-                    <div className="qa-answer"><div className="a-badge">A</div><div className="answer-content" dangerouslySetInnerHTML={{ __html: item.a }} /></div>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          )}
+
         </AnimatePresence>
       </main>
 
